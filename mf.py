@@ -6,14 +6,14 @@ import numpy as n
 
 # Accept array and dim of number of  attributes 
 def factorize(arr, dim):
-	print arr
-	print dim
+	#print arr
+	#print dim
 	alpha = 0.002
 	steps = 5000
 
 	# get the shape of input array
 	(rows, columns) = arr.shape	
-	print rows, columns
+	#print rows, columns
 
 	# arr = left x right.transpose
 	left = n.random.rand(rows, dim)
@@ -47,7 +47,7 @@ def factorize(arr, dim):
 
 # Accept array and dim of number of  attributes an regularize
 def factorize_with_regularization(arr, dim):
-	print arr
+	#print arr
 	print dim
 	alpha = 0.002
 	steps = 5000
@@ -111,6 +111,20 @@ def rmse(inp, out):
 
 	return err
 
+# generate random input matrix
+def generate_random_input(users, movies):
+	inp = n.round(n.random.rand(users,movies) * 10) % 5
+	i = 0
+	while i < 1000:
+		x = n.random.randint(0,users) 
+		y = n.random.randint(0,movies)
+		inp[x, y] = 0
+		i = i + 1
+
+	print "non zero elemets/total elements = ", n.count_nonzero(inp), "/", users*movies
+	return inp
+	
+
 if __name__ == "__main__":
 	print "start"
 	inp = [ [5,3,0,0,4,0,0,0,0],
@@ -131,28 +145,21 @@ if __name__ == "__main__":
 		[0,1,0,0,0,0,0,0,1],
 		[4,0,1,0,0,3,0,0,0]]
 
-	users = 50
-	movies = 20
-	inp = n.round(n.random.rand(users,movies) * 10) % 5
-	i = 0
-	while i < 800:
-		x = n.random.rand(1,1)*10 
-		y = n.random.rand(1,1)*10 
-		inp[int(x[0,0]), int(y[0,0])] = 0
-		i = i + 1
-
-	print "non zero elemets = ", n.count_nonzero(inp)
+	inp = generate_random_input(50, 20)
 
 	latent_attrib = 4
+	print "input size = ", n.shape(inp)
+	print "latent attributes - ", latent_attrib
 	(l,r) = factorize(n.array(inp), latent_attrib)
 	recco1 = n.dot(l, r.T)
 	print "********************MF**********************"
 	print "User Characteristics"
-	print n.round(l)
+	#print n.round(l)
 	print "Item Characteristics"
-	print n.round(r.T)
-	print "Predicted recommendations"
-	print n.round(recco1)
+	#print n.round(r.T)
+	print "Predicted recommendations "
+	print "non zero elemets/total elements = ", n.count_nonzero(recco1), "/", n.shape(recco1)[0]*n.shape(recco1)[1]
+	#print n.round(recco1)
 	print "ERROR = ", rmse(inp, n.array(recco1))
 	print "********************MF**********************"
 	#(l,r) = factorize_with_regularization(n.array(inp), latent_attrib)
@@ -165,13 +172,14 @@ if __name__ == "__main__":
 	recco2 = n.dot(n.dot(u, n.diag(s)), v)
 	print "********************SVD**********************"
 	print "User Characteristics"
-	print n.round(u)
+	#print n.round(u)
 	print "Diagonal"
-	print n.round(s)
+	#print n.round(s)
 	print "Item Characteristics"
-	print n.round(v)
+	#print n.round(v)
 	print "Predicted recommendations"
-	print n.round(recco2)
-	print "ERROR = ", rmse(inp, n.array(recco1))
+	print "non zero elemets/total elements = ", n.count_nonzero(recco2), "/", n.shape(recco2)[0]*n.shape(recco2)[1]
+	#print n.round(recco2)
+	print "ERROR = ", rmse(inp, n.array(recco2))
 	print "********************SVD**********************"
 
